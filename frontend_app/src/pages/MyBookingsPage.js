@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 export function MyBookingsPage() {
   /** Page displaying all stored bookings with a clean, themed design */
   const [bookings, setBookings] = useState([]);
+  const [deletedBooking, setDeletedBooking] = useState(null);
+  const [showUndo, setShowUndo] = useState(false);
 
   useEffect(() => {
     // Load bookings from localStorage
@@ -25,6 +27,43 @@ export function MyBookingsPage() {
     });
   };
 
+  const handleDelete = (bookingToDelete) => {
+    // Store the deleted booking for potential undo
+    setDeletedBooking(bookingToDelete);
+    
+    // Filter out the deleted booking
+    const updatedBookings = bookings.filter(b => b.id !== bookingToDelete.id);
+    setBookings(updatedBookings);
+    
+    // Update localStorage
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
+    // Show undo option
+    setShowUndo(true);
+    
+    // Auto-hide undo after 5 seconds
+    setTimeout(() => {
+      setShowUndo(false);
+      setDeletedBooking(null);
+    }, 5000);
+  };
+
+  const handleUndo = () => {
+    if (!deletedBooking) return;
+    
+    // Add the booking back
+    const restoredBookings = [...bookings, deletedBooking];
+    // Re-sort by date
+    restoredBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    setBookings(restoredBookings);
+    localStorage.setItem('bookings', JSON.stringify(restoredBookings));
+    
+    // Hide undo UI
+    setShowUndo(false);
+    setDeletedBooking(null);
+  };
+
   return (
     <div className="container">
       <div style={styles.header}>
@@ -33,6 +72,19 @@ export function MyBookingsPage() {
           Plan New Event
         </Link>
       </div>
+
+      {showUndo && (
+        <div style={styles.undoBar}>
+          <span>Event deleted</span>
+          <button
+            onClick={handleUndo}
+            className="btn btn-ghost"
+            style={styles.undoButton}
+          >
+            Undo
+          </button>
+        </div>
+      )}
 
       {bookings.length === 0 ? (
         <div className="card" style={styles.emptyState}>
@@ -51,9 +103,19 @@ export function MyBookingsPage() {
             <div key={booking.id} className="card" style={styles.bookingCard}>
               <div style={styles.cardHeader}>
                 <h3 style={styles.eventTitle}>{booking.title}</h3>
-                <span style={styles.badge}>
-                  {booking.guests} {booking.guests === 1 ? 'Guest' : 'Guests'}
-                </span>
+                <div style={styles.headerActions}>
+                  <span style={styles.badge}>
+                    {booking.guests} {booking.guests === 1 ? 'Guest' : 'Guests'}
+                  </span>
+                  <button
+                    onClick={() => handleDelete(booking)}
+                    className="btn btn-ghost"
+                    style={styles.deleteButton}
+                    aria-label="Delete booking"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
               
               <div style={styles.details}>
@@ -129,11 +191,17 @@ const styles = {
     marginBottom: 16,
     gap: 12
   },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8
+  },
   eventTitle: {
     margin: 0,
     fontSize: '1.25rem',
     color: 'var(--primary)',
-    wordBreak: 'break-word'
+    wordBreak: 'break-word',
+    flex: 1
   },
   badge: {
     fontSize: '0.875rem',
@@ -142,6 +210,20 @@ const styles = {
     background: 'var(--accent)',
     color: 'white',
     whiteSpace: 'nowrap'
+  },
+  deleteButton: {
+    padding: '4px 8px',
+    fontSize: '1.5rem',
+    lineHeight: 1,
+    color: 'var(--error)',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
+    transition: 'all 200ms ease',
+    borderRadius: 'var(--radius-sm)',
+    ':hover': {
+      background: 'rgba(239, 68, 68, 0.1)'
+    }
   },
   details: {
     display: 'flex',
@@ -184,5 +266,31 @@ const styles = {
   },
   emptyIcon: {
     fontSize: '48px'
+  },
+  undoBar: {
+    position: 'fixed',
+    bottom: 24,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    background: 'var(--surface)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-md)',
+    padding: '12px 20px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+    boxShadow: 'var(--shadow-md)',
+    zIndex: 50,
+    animation: 'slideUp 0.3s ease'
+  },
+  undoButton: {
+    padding: '6px 12px',
+    fontSize: '0.875rem',
+    color: 'var(--primary)',
+    background: 'transparent',
+    border: '1px solid var(--primary)',
+    borderRadius: 'var(--radius-sm)',
+    cursor: 'pointer',
+    transition: 'all 200ms ease'
   }
 };
