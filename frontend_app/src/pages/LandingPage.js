@@ -82,12 +82,12 @@ export function LandingPage() {
 
 const styles = {
   section: {
-    background: 'linear-gradient(135deg, #3ABAB4 0%, #FF7F6B 50%, #9B8AA6 100%)',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: '40px 0'
+    padding: '40px 0',
+    background: 'transparent'
   },
   content: {
     display: 'flex',

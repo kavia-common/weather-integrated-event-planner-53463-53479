@@ -22,7 +22,8 @@ const styles = {
   footer: {
     marginTop: 32,
     borderTop: '1px solid var(--border)',
-    background: 'linear-gradient(to right, rgba(58,186,180,0.03), rgba(255,127,107,0.02))'
+    background: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(6px)'
   },
   inner: {
     padding: '18px 0',
