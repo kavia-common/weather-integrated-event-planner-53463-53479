@@ -12,7 +12,7 @@ export function Header() {
       <div className="container" style={styles.headerInner}>
         <Link to="/" style={styles.brand}>
           <span style={styles.brandDot} />
-          <span>Ocean Planner</span>
+          <span>WeatherWise</span>
         </Link>
         <nav style={styles.nav}>
           <Link to="/" style={{ ...styles.navLink, ...(isActive('/') ? styles.navLinkActive : {}) }}>

@@ -33,7 +33,7 @@ export function BookingForm({ defaultDate }) {
   return (
     <form onSubmit={submit} className="card" style={styles.form} aria-label="Booking form">
       <h3 style={{ marginTop: 0, marginBottom: 8 }}>Book Your Event</h3>
-      <p className="small" style={{ marginTop: 0 }}>Plan with weather-aware tips. Fields with * are required.</p>
+      <p className="small" style={{ marginTop: 0 }}>Plan with WeatherWise tips. Fields with * are required.</p>
 
       <div style={styles.field}>
         <label htmlFor="name">Name *</label>

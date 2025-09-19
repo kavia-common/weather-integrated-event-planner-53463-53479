@@ -25,11 +25,11 @@ export function LandingPage() {
       <section style={styles.hero}>
         <div className="container" style={styles.heroInner}>
           <div style={styles.heroContent}>
-            <div style={styles.kicker}>Weather-integrated event planning</div>
-            <h1 style={styles.title}>Plan smarter with live weather insights</h1>
+            <div style={styles.kicker}>Weather-aware event planning</div>
+            <h1 style={styles.title}>Plan smarter events with WeatherWise</h1>
             <p style={styles.subtitle}>
-              Ocean Planner blends an interactive calendar with real-time weather,
-              providing suggestions to ensure your event is a success—rain or shine.
+              WeatherWise Event Planner blends an interactive calendar with real-time weather data,
+              providing smart suggestions to ensure your event is a success—rain or shine.
             </p>
             <div style={styles.ctaWrapper}>
               <Link to="/planner" className="btn" style={styles.mainCTA}>
@@ -90,7 +90,7 @@ export function LandingPage() {
 
 const styles = {
   hero: {
-    background: 'linear-gradient(180deg, rgba(37,99,235,0.08), rgba(255,255,255,1))',
+    background: 'linear-gradient(180deg, rgba(37,99,235,0.12), transparent)',
     position: 'relative',
     paddingBottom: 40,
     minHeight: '100vh',

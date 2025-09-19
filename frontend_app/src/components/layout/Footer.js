@@ -7,7 +7,7 @@ export function Footer() {
     <footer style={styles.footer}>
       <div className="container" style={styles.inner}>
         <span style={{ color: 'var(--subtle)' }}>
-          © {new Date().getFullYear()} Ocean Planner. Built with React.
+          © {new Date().getFullYear()} WeatherWise Event Planner. Built with React.
         </span>
         <div style={{ display: 'flex', gap: 12 }}>
           <a href="https://github.com" target="_blank" rel="noreferrer" style={styles.link}>GitHub</a>
