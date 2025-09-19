@@ -1,15 +1,15 @@
 export const theme = {
-  name: "Warm Peach Sunset",
+  name: "Teal Coral Harmony",
   colors: {
-    primary: "#FFB5A8", // lighter warm peach
-    secondary: "#FF8FA5", // lighter rose
-    accent: "#FFE0A3", // lighter soft yellow
+    primary: "#3ABAB4", // modern teal
+    secondary: "#FF7F6B", // warm coral
+    accent: "#9B8AA6", // muted purple
     error: "#EF4444",
-    background: "#fff5f2",
+    background: "#f8fafa",
     surface: "#ffffff",
-    text: "#111827",
-    subtle: "#6B7280",
-    border: "#FFE5E0"
+    text: "#222222", // darker text for better readability
+    subtle: "#4A5568", // darker subtle text
+    border: "#E2F1F0" // light teal border
   },
   shadows: {
     sm: "0 1px 2px rgba(0,0,0,0.06)",

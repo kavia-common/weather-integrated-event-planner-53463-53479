@@ -118,7 +118,7 @@ const styles = {
     borderColor: 'var(--secondary)'
   },
   selected: {
-    background: 'linear-gradient(180deg, rgba(37,99,235,0.08), white)',
+    background: 'linear-gradient(180deg, rgba(58,186,180,0.08), white)',
     borderColor: 'var(--primary)'
   }
 };

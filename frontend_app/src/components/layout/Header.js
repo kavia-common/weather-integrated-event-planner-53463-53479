@@ -32,7 +32,7 @@ const styles = {
     position: 'sticky',
     top: 0,
     zIndex: 40,
-    background: 'linear-gradient(to right, rgba(255,181,168,0.06), rgba(255,143,165,0.04))',
+    background: 'linear-gradient(to right, rgba(58,186,180,0.06), rgba(255,127,107,0.04))',
     borderBottom: '1px solid var(--border)',
     backdropFilter: 'blur(6px)'
   },
