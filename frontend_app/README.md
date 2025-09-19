@@ -34,7 +34,9 @@ Notes:
 - Restart `npm start` after changing `.env`.
 - You can verify runtime injection by opening the browser console; the Weather widget logs a masked env status on load.
 
-Optional: show an inline debug readout in the UI by rendering `<WeatherWidget showEnvDebug />` somewhere in your component tree.
+Optional:
+- Show an inline debug readout in the UI by rendering `<WeatherWidget showEnvDebug />`.
+- The Weather widget no longer requests geolocation. Users select a city from a dropdown or enter one manually. The widget defaults to "New York" unless you pass a different `defaultCity` prop.
 
 ### `npm test`
 

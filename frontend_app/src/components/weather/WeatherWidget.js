@@ -1,20 +1,34 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { fetchWeatherByCoords, fetchWeatherByCity, getRecommendations, getWeatherConfigStatus } from '../../services/weatherService';
+import { fetchWeatherByCity, getRecommendations, getWeatherConfigStatus } from '../../services/weatherService';
 import { validateWeatherEnv } from '../../services/envDiagnostics';
 
+// A small curated list for quick selection, styled per Ocean Professional
+const PRESET_CITIES = [
+  { label: 'New York, US', value: 'New York' },
+  { label: 'San Francisco, US', value: 'San Francisco' },
+  { label: 'London, GB', value: 'London' },
+  { label: 'Tokyo, JP', value: 'Tokyo' },
+  { label: 'Sydney, AU', value: 'Sydney' }
+];
+
 // PUBLIC_INTERFACE
-export function WeatherWidget({ showEnvDebug = false }) {
+export function WeatherWidget({ showEnvDebug = false, defaultCity = 'New York' }) {
   /**
    * PUBLIC_INTERFACE
    * Sticky weather widget showing current conditions and tips.
-   * Attempts geolocation; if unavailable or denied, falls back to a default city and informs the user.
+   * No longer requests geolocation. The user selects a city via dropdown or inputs manually.
+   * Fetches current weather for the chosen city using OpenWeatherMap.
    * - showEnvDebug (boolean): when true, shows masked env and issues to help verify .env is loaded.
+   * - defaultCity (string): default city to load when nothing is selected.
    */
   const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState('');
-  const [info, setInfo] = useState(''); // non-error user information (e.g., geolocation denied)
   const [diagnostic, setDiagnostic] = useState(null);
+
+  // city selection state: dropdown + manual input
+  const [city, setCity] = useState(defaultCity);
+  const [customCity, setCustomCity] = useState('');
 
   // compute env validation once for logging/debugging
   const envValidation = useMemo(() => validateWeatherEnv(), []);
@@ -29,62 +43,54 @@ export function WeatherWidget({ showEnvDebug = false }) {
     });
   }, [envValidation]);
 
+  // capture config diagnostics early
   useEffect(() => {
-    let cancelled = false;
-
-    // Capture config diagnostics early to surface helpful guidance
     const status = getWeatherConfigStatus();
     if (!status.ok) {
       setDiagnostic(status);
     }
-
-    // Helper function: fall back to a default city and show info to user
-    const fallbackToCity = async (reasonText) => {
-      try {
-        setInfo(reasonText || 'Using default city due to unavailable location.');
-        const w = await fetchWeatherByCity(); // uses default city internally
-        if (!cancelled) setWeather(w);
-      } catch (e) {
-        if (!cancelled) setError(`${e?.message || 'Unable to fetch weather data.'}`);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    // Fetch weather using coordinates, and if it fails, fall back to city
-    const fetchByCoords = async (lat, lon) => {
-      try {
-        const w = await fetchWeatherByCoords(lat, lon);
-        if (!cancelled) setWeather(w);
-      } catch (e) {
-        if (!cancelled) {
-          setError(`${e?.message || 'Unable to fetch weather for your location.'} Falling back to a default city.`);
-          try {
-            const w = await fetchWeatherByCity();
-            if (!cancelled) setWeather(w);
-          } catch (e2) {
-            if (!cancelled) setError(e2?.message || 'Unable to fetch weather data after fallback.');
-          }
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => fetchByCoords(pos.coords.latitude, pos.coords.longitude),
-        () => fallbackToCity('Location access denied or unavailable. Showing weather for a default city.'),
-        { timeout: 5000, enableHighAccuracy: false, maximumAge: 60000 }
-      );
-    } else {
-      fallbackToCity('Your browser does not support geolocation. Showing weather for a default city.');
-    }
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  // Helper to perform fetch by the current effective city
+  const fetchForCity = async (targetCity) => {
+    setLoading(true);
+    setError('');
+    try {
+      const w = await fetchWeatherByCity(targetCity || defaultCity);
+      setWeather(w);
+    } catch (e) {
+      setError(e?.message || 'Unable to fetch weather data.');
+      setWeather(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // On mount, fetch default city
+  useEffect(() => {
+    fetchForCity(defaultCity);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultCity]);
+
+  // Handlers
+  const onPresetChange = (e) => {
+    const nextCity = e.target.value;
+    setCity(nextCity);
+    setCustomCity('');
+    fetchForCity(nextCity);
+  };
+
+  const onCustomInputChange = (e) => {
+    setCustomCity(e.target.value);
+  };
+
+  const onApplyCustom = (e) => {
+    e.preventDefault();
+    const trimmed = customCity.trim();
+    if (!trimmed) return;
+    setCity(trimmed);
+    fetchForCity(trimmed);
+  };
 
   const recs = weather ? getRecommendations(weather.current?.description) : [];
 
@@ -101,15 +107,44 @@ export function WeatherWidget({ showEnvDebug = false }) {
         </div>
       )}
 
-      {loading && <div className="small">Fetching weather...</div>}
-      {!loading && info && !error && (
-        <div className="small" style={{ color: 'var(--subtle)', marginBottom: 8 }}>{info}</div>
-      )}
-      {!loading && diagnostic && (
+      {diagnostic && (
         <div className="small" style={{ color: 'var(--error)', marginBottom: 8 }}>
           Configuration issue: {diagnostic.issues.join(' | ')}{diagnostic.apiKeyMasked ? ` (key: ${diagnostic.apiKeyMasked})` : ''}
         </div>
       )}
+
+      {/* City selection UI */}
+      <div style={{ marginBottom: 10 }}>
+        <label htmlFor="presetCity">City</label>
+        <select id="presetCity" value={city} onChange={onPresetChange} aria-label="Select city">
+          {PRESET_CITIES.map((c) => (
+            <option key={c.value} value={c.value}>{c.label}</option>
+          ))}
+          {/* Ensure default city appears if not in presets */}
+          {!PRESET_CITIES.some(c => c.value === defaultCity) && (
+            <option value={defaultCity}>{defaultCity}</option>
+          )}
+        </select>
+        <form onSubmit={onApplyCustom} style={{ marginTop: 8 }}>
+          <label htmlFor="customCity">Or enter a city</label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              id="customCity"
+              type="text"
+              placeholder="e.g., Paris"
+              value={customCity}
+              onChange={onCustomInputChange}
+              aria-label="Enter a city name"
+            />
+            <button className="btn" type="submit" aria-label="Apply custom city">Apply</button>
+          </div>
+          <div className="small" style={{ marginTop: 4, color: 'var(--subtle)' }}>
+            Default: {defaultCity}. Weather is fetched only for the selected/entered city.
+          </div>
+        </form>
+      </div>
+
+      {loading && <div className="small">Fetching weather...</div>}
       {!loading && error && <div style={{ color: 'var(--error)' }} className="small">{error}</div>}
       {!loading && weather && !error && (
         <>

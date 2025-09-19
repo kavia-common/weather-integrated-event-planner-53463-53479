@@ -1,6 +1,7 @@
 const BASE_URL = process.env.REACT_APP_WEATHER_API_BASE_URL || '';
 const API_KEY = process.env.REACT_APP_WEATHER_API_KEY || '';
-const DEFAULT_CITY = 'New York'; // Used when geolocation is unavailable or denied
+// Default city when no selection is made; used by fetchWeatherByCity if no arg provided.
+export const DEFAULT_CITY = 'New York';
 
 // Validate that BASE_URL resembles a full OpenWeather endpoint.
 // Accept typical forms like: https://api.openweathermap.org/data/2.5/weather
