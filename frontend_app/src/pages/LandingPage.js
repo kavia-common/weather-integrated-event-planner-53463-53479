@@ -104,11 +104,12 @@ const styles = {
     textAlign: 'center'
   },
   kicker: {
-    color: 'var(--secondary)',
+    color: '#222',
     fontSize: 14,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    marginBottom: 12
+    marginBottom: 12,
+    fontWeight: 600
   },
   title: {
     margin: '0 0 16px',
