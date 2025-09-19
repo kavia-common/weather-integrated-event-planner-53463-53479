@@ -21,7 +21,6 @@ export function Header() {
           <Link to="/planner" style={{ ...styles.navLink, ...(isActive('/planner') ? styles.navLinkActive : {}) }}>
             Planner
           </Link>
-          <a href="https://reactjs.org" target="_blank" rel="noreferrer" style={styles.navLink}>Docs</a>
         </nav>
       </div>
     </header>

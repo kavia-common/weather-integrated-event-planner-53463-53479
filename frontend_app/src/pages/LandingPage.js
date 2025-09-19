@@ -92,21 +92,28 @@ const styles = {
   hero: {
     background: 'linear-gradient(180deg, rgba(37,99,235,0.08), rgba(255,255,255,1))',
     position: 'relative',
-    paddingBottom: 40
+    paddingBottom: 40,
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
   },
   heroInner: {
-    display: 'grid',
-    gridTemplateColumns: '1.2fr 1fr',
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     gap: 40,
     padding: '60px 0 20px',
     '@media (max-width: 768px)': {
-      gridTemplateColumns: '1fr',
-      gap: 32
+      gap: 32,
+      padding: '40px 0 20px'
     }
   },
   heroContent: {
-    maxWidth: 600
+    maxWidth: 800,
+    width: '100%'
   },
   kicker: {
     color: 'var(--secondary)',
@@ -139,7 +146,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    alignItems: 'flex-start'
+    alignItems: 'center'
   },
   mainCTA: {
     fontSize: '1.25rem',
@@ -162,7 +169,9 @@ const styles = {
     boxShadow: 'var(--shadow-lg)',
     overflow: 'hidden',
     border: '1px solid rgba(37,99,235,0.1)',
-    transform: 'translateY(-8px)'
+    width: '100%',
+    maxWidth: 600,
+    margin: '0 auto'
   },
   slide: {
     textAlign: 'center',
