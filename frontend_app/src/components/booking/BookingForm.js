@@ -26,7 +26,21 @@ export function BookingForm({ defaultDate }) {
       setMessage('Please fill the required fields.');
       return;
     }
-    // In real app, send to backend API
+
+    // Get existing bookings from localStorage or initialize empty array
+    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    
+    // Add new booking with timestamp
+    const newBooking = {
+      ...form,
+      id: Date.now(), // Add unique ID for future reference
+      createdAt: new Date().toISOString()
+    };
+    
+    // Update localStorage with new booking
+    localStorage.setItem('bookings', JSON.stringify([...existingBookings, newBooking]));
+
+    // Show success message
     setMessage('Your event has been booked!');
   };
 
