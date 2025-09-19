@@ -27,8 +27,16 @@ export function BookingForm({ defaultDate }) {
       return;
     }
     // In real app, send to backend API
-    setMessage('Your event has been tentatively booked! A confirmation email will be sent.');
+    setMessage('Your event has been booked!');
   };
+
+  // Auto-dismiss success message after 5 seconds
+  React.useEffect(() => {
+    if (message && !message.includes('Please')) {
+      const timer = setTimeout(() => setMessage(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   return (
     <form onSubmit={submit} className="card" style={styles.form} aria-label="Booking form">
@@ -71,7 +79,38 @@ export function BookingForm({ defaultDate }) {
         <textarea id="notes" name="notes" rows="3" value={form.notes} onChange={update} placeholder="Preferences, special requests..." />
       </div>
 
-      {message && <div className="small" style={{ color: message.includes('Please') ? 'var(--error)' : 'var(--secondary)' }}>{message}</div>}
+      {message && (
+        <div 
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            background: message.includes('Please') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(58, 186, 180, 0.1)',
+            color: message.includes('Please') ? 'var(--error)' : 'var(--primary)',
+            border: `1px solid ${message.includes('Please') ? 'var(--error)' : 'var(--primary)'}`,
+          }}
+        >
+          <span>{message}</span>
+          <button
+            type="button"
+            onClick={() => setMessage('')}
+            style={{
+              border: 'none',
+              background: 'none',
+              padding: '4px',
+              cursor: 'pointer',
+              color: 'inherit',
+              opacity: 0.7,
+            }}
+            aria-label="Close message"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <button type="submit" className="btn">Book Event</button>
