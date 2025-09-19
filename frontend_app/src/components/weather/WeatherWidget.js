@@ -1,18 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fetchWeatherByCoords, fetchWeatherByCity, getRecommendations, getWeatherConfigStatus } from '../../services/weatherService';
+import { validateWeatherEnv } from '../../services/envDiagnostics';
 
 // PUBLIC_INTERFACE
-export function WeatherWidget() {
+export function WeatherWidget({ showEnvDebug = false }) {
   /**
    * PUBLIC_INTERFACE
    * Sticky weather widget showing current conditions and tips.
    * Attempts geolocation; if unavailable or denied, falls back to a default city and informs the user.
+   * - showEnvDebug (boolean): when true, shows masked env and issues to help verify .env is loaded.
    */
   const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState('');
   const [info, setInfo] = useState(''); // non-error user information (e.g., geolocation denied)
   const [diagnostic, setDiagnostic] = useState(null);
+
+  // compute env validation once for logging/debugging
+  const envValidation = useMemo(() => validateWeatherEnv(), []);
+
+  useEffect(() => {
+    // Log env status once to assist diagnosis without exposing secrets
+    // eslint-disable-next-line no-console
+    console.info('[WeatherWidget] Env validation:', {
+      ok: envValidation.ok,
+      issues: envValidation.issues,
+      values: envValidation.values, // masked
+    });
+  }, [envValidation]);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,6 +93,14 @@ export function WeatherWidget() {
       <div style={styles.header}>
         <span style={styles.badge}>Live Weather</span>
       </div>
+
+      {showEnvDebug && (
+        <div className="small" style={{ color: envValidation.ok ? 'var(--subtle)' : 'var(--error)', marginBottom: 8 }}>
+          Env: baseUrl={envValidation.values.baseUrl} | apiKey={envValidation.values.apiKey}
+          {!envValidation.ok && envValidation.issues.length ? ` | Issues: ${envValidation.issues.join(' | ')}` : ''}
+        </div>
+      )}
+
       {loading && <div className="small">Fetching weather...</div>}
       {!loading && info && !error && (
         <div className="small" style={{ color: 'var(--subtle)', marginBottom: 8 }}>{info}</div>

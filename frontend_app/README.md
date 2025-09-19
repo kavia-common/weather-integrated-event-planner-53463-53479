@@ -18,6 +18,24 @@ In the project directory, you can run:
 Runs the app in development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
+### Environment configuration (Weather API)
+
+Create a `.env` file in `frontend_app` (same folder as `package.json`). Do not double-prefix variable names.
+
+Correct variable names:
+```
+REACT_APP_WEATHER_API_BASE_URL=https://api.openweathermap.org/data/2.5/weather
+REACT_APP_WEATHER_API_KEY=YOUR_OPENWEATHER_KEY
+```
+
+Notes:
+- Do not wrap values in quotes.
+- No trailing spaces or comments on the same line.
+- Restart `npm start` after changing `.env`.
+- You can verify runtime injection by opening the browser console; the Weather widget logs a masked env status on load.
+
+Optional: show an inline debug readout in the UI by rendering `<WeatherWidget showEnvDebug />` somewhere in your component tree.
+
 ### `npm test`
 
 Launches the test runner in interactive watch mode.
