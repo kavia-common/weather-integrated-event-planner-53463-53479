@@ -11,25 +11,26 @@ export function PlannerPage() {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: '20px',
-      maxWidth: '1400px',
-      margin: '0 auto'
+      gridTemplateColumns: '340px 380px 380px',
+      gap: '16px',
+      maxWidth: '1200px',
+      margin: '0 auto',
+      alignItems: 'start'
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <section className="card" style={{ padding: '16px', maxWidth: '450px' }}>
-          <h2 style={{ fontSize: '1.5rem', marginTop: 0, marginBottom: 8 }}>Plan your perfect event</h2>
-          <p className="small" style={{ marginTop: 0, marginBottom: 12 }}>
-            Choose a date on the calendar. Check live weather and get actionable recommendations.
-          </p>
-          <Calendar value={selectedDate} onChange={setSelectedDate} />
-        </section>
-        <Sidebar selectedDate={selectedDate} />
-      </div>
+      {/* Left column - Calendar */}
+      <section className="card" style={{ padding: '16px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginTop: 0, marginBottom: 8 }}>Plan your perfect event</h2>
+        <p className="small" style={{ marginTop: 0, marginBottom: 12 }}>
+          Choose a date on the calendar. Check live weather and get actionable recommendations.
+        </p>
+        <Calendar value={selectedDate} onChange={setSelectedDate} />
+      </section>
 
-      <div style={{ maxWidth: '450px' }}>
-        <BookingForm defaultDate={selectedDate} />
-      </div>
+      {/* Middle column - Weather */}
+      <Sidebar selectedDate={selectedDate} />
+
+      {/* Right column - Booking Form */}
+      <BookingForm defaultDate={selectedDate} />
     </div>
   );
 }
