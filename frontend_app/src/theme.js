@@ -1,9 +1,9 @@
 export const theme = {
   name: "Warm Peach Sunset",
   colors: {
-    primary: "#FF9A8B", // warm peach
-    secondary: "#FF6A88", // rose
-    accent: "#FFD280", // soft yellow
+    primary: "#FFB5A8", // lighter warm peach
+    secondary: "#FF8FA5", // lighter rose
+    accent: "#FFE0A3", // lighter soft yellow
     error: "#EF4444",
     background: "#fff5f2",
     surface: "#ffffff",

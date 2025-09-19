@@ -82,7 +82,7 @@ export function LandingPage() {
 
 const styles = {
   section: {
-    background: 'linear-gradient(135deg, #FF9A8B 0%, #FF6A88 50%, #FFD280 100%)',
+    background: 'linear-gradient(135deg, #FFB5A8 0%, #FF8FA5 50%, #FFE0A3 100%)',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
