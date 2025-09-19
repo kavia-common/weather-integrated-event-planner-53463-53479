@@ -94,7 +94,7 @@ export function BookingForm({ defaultDate }) {
 
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div style={styles.field}>
-          <label htmlFor="email">Email (or Phone required)</label>
+          <label htmlFor="email">Email (Optional)</label>
           <input 
             id="email" 
             name="email" 
@@ -105,7 +105,7 @@ export function BookingForm({ defaultDate }) {
           />
         </div>
         <div style={styles.field}>
-          <label htmlFor="phone">Phone (or Email required)</label>
+          <label htmlFor="phone">Phone (Optional)</label>
           <input 
             id="phone" 
             name="phone" 
