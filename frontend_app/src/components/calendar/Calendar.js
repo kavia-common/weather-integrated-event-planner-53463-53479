@@ -98,15 +98,17 @@ const styles = {
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(7, 1fr)',
-    gap: 8
+    gap: 6
   },
   day: {
     aspectRatio: '1 / 1',
-    borderRadius: 12,
+    borderRadius: 8,
     border: '1px solid var(--border)',
     background: 'white',
     boxShadow: 'var(--shadow-sm)',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    padding: '4px'
   },
   dayEmpty: {
     background: '#f3f4f6',

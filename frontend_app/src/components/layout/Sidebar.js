@@ -26,6 +26,6 @@ export function Sidebar({ selectedDate }) {
 const styles = {
   aside: {
     width: '100%',
-    maxWidth: 340
+    maxWidth: '450px'
   }
 };
