@@ -21,6 +21,9 @@ export function Header() {
           <Link to="/planner" style={{ ...styles.navLink, ...(isActive('/planner') ? styles.navLinkActive : {}) }}>
             Planner
           </Link>
+          <Link to="/bookings" style={{ ...styles.navLink, ...(isActive('/bookings') ? styles.navLinkActive : {}) }}>
+            My Bookings
+          </Link>
         </nav>
       </div>
     </header>

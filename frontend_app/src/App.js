@@ -5,6 +5,7 @@ import './App.css';
 import { AppLayout } from './components/layout/AppLayout';
 import { LandingPage } from './pages/LandingPage';
 import { PlannerPage } from './pages/PlannerPage';
+import { MyBookingsPage } from './pages/MyBookingsPage';
 
 // PUBLIC_INTERFACE
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/planner" element={<PlannerPage />} />
+          <Route path="/bookings" element={<MyBookingsPage />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
