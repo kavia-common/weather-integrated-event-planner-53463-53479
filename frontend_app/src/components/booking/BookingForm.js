@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 export function BookingForm({ defaultDate }) {
   /**
    * PUBLIC_INTERFACE
-   * Fixed-position booking form for planner page.
+   * Booking form for planner page (participates in normal flow; no sticky positioning).
    * - defaultDate: Date | null
    */
   const [form, setForm] = useState({
@@ -86,8 +86,6 @@ export function BookingForm({ defaultDate }) {
 const styles = {
   form: {
     padding: 16,
-    position: 'sticky',
-    top: 84,
     minWidth: 300
   },
   field: {

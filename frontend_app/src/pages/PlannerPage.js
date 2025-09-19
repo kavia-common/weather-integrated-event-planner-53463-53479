@@ -5,11 +5,11 @@ import { BookingForm } from '../components/booking/BookingForm';
 
 // PUBLIC_INTERFACE
 export function PlannerPage() {
-  /** Planner page with main grid: calendar + fixed booking + sticky weather sidebar */
+  /** Planner page with main grid: calendar + booking form + weather/tips, all scrolling together */
   const [selectedDate, setSelectedDate] = useState(null);
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', gap: 16 }}>
+    <div className="grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', gap: 16, alignItems: 'start' }}>
       <div>
         <section className="card" style={{ padding: 16 }}>
           <h2 style={{ marginTop: 0 }}>Plan your perfect event</h2>
