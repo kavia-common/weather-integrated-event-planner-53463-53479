@@ -2,6 +2,46 @@ const BASE_URL = process.env.REACT_APP_WEATHER_API_BASE_URL || '';
 const API_KEY = process.env.REACT_APP_WEATHER_API_KEY || '';
 const DEFAULT_CITY = 'New York'; // Used when geolocation is unavailable or denied
 
+// Validate that BASE_URL resembles a full OpenWeather endpoint.
+// Accept typical forms like: https://api.openweathermap.org/data/2.5/weather
+function isLikelyValidBaseUrl(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    // Require path to include '/weather' (current weather endpoint) and https protocol
+    return u.protocol.startsWith('http') && /\/weather$/.test(u.pathname);
+  } catch {
+    return false;
+  }
+}
+
+// Mask API key for diagnostics (keep last 4 chars)
+function maskKey(key) {
+  if (!key) return '';
+  const len = String(key).length;
+  if (len <= 4) return '****';
+  return `${'*'.repeat(Math.max(0, len - 4))}${key.slice(-4)}`;
+}
+
+// PUBLIC_INTERFACE
+export function getWeatherConfigStatus() {
+  /**
+   * Provides a detailed status of the weather API configuration,
+   * useful for surfacing actionable diagnostics in the UI.
+   */
+  const okBase = isLikelyValidBaseUrl(BASE_URL);
+  const okKey = !!API_KEY;
+  return {
+    ok: okBase && okKey,
+    baseUrl: BASE_URL || '',
+    apiKeyMasked: maskKey(API_KEY),
+    issues: [
+      ...(okBase ? [] : ['REACT_APP_WEATHER_API_BASE_URL is missing or not a full endpoint (e.g., https://api.openweathermap.org/data/2.5/weather)']),
+      ...(okKey ? [] : ['REACT_APP_WEATHER_API_KEY is missing']),
+    ]
+  };
+}
+
 /**
  * PUBLIC_INTERFACE
  * fetchWeatherByCoords fetches current weather by geographic coordinates using OpenWeatherMap.
@@ -11,15 +51,19 @@ const DEFAULT_CITY = 'New York'; // Used when geolocation is unavailable or deni
  * Throws on missing env or failed response.
  */
 export async function fetchWeatherByCoords(lat, lon) {
-  if (!BASE_URL || !API_KEY) {
-    throw new Error('Missing weather API configuration. Please set REACT_APP_WEATHER_API_BASE_URL and REACT_APP_WEATHER_API_KEY in .env');
+  const status = getWeatherConfigStatus();
+  if (!status.ok) {
+    throw new Error(`Missing/invalid weather API configuration. Issues: ${status.issues.join('; ')}`);
   }
 
   const url = `${BASE_URL}?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&appid=${encodeURIComponent(API_KEY)}&units=metric`;
   const res = await fetch(url);
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
-    throw new Error(`Weather API error: ${res.status} ${txt}`.trim());
+    // Provide more context for debugging
+    throw new Error(
+      `Weather API error: HTTP ${res.status}. URL: ${BASE_URL} (query hidden). Key: ${status.apiKeyMasked}. Body: ${txt}`.trim()
+    );
   }
   const data = await res.json();
 
@@ -32,15 +76,18 @@ export async function fetchWeatherByCoords(lat, lon) {
  * Useful as a fallback when geolocation is unavailable.
  */
 export async function fetchWeatherByCity(cityName = DEFAULT_CITY) {
-  if (!BASE_URL || !API_KEY) {
-    throw new Error('Missing weather API configuration. Please set REACT_APP_WEATHER_API_BASE_URL and REACT_APP_WEATHER_API_KEY in .env');
+  const status = getWeatherConfigStatus();
+  if (!status.ok) {
+    throw new Error(`Missing/invalid weather API configuration. Issues: ${status.issues.join('; ')}`);
   }
 
   const url = `${BASE_URL}?q=${encodeURIComponent(cityName)}&appid=${encodeURIComponent(API_KEY)}&units=metric`;
   const res = await fetch(url);
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
-    throw new Error(`Weather API error: ${res.status} ${txt}`.trim());
+    throw new Error(
+      `Weather API error: HTTP ${res.status}. URL: ${BASE_URL} (query hidden). Key: ${status.apiKeyMasked}. Body: ${txt}`.trim()
+    );
   }
   const data = await res.json();
 

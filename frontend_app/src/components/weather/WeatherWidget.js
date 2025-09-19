@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchWeatherByCoords, fetchWeatherByCity, getRecommendations } from '../../services/weatherService';
+import { fetchWeatherByCoords, fetchWeatherByCity, getRecommendations, getWeatherConfigStatus } from '../../services/weatherService';
 
 // PUBLIC_INTERFACE
 export function WeatherWidget() {
@@ -12,9 +12,16 @@ export function WeatherWidget() {
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState('');
   const [info, setInfo] = useState(''); // non-error user information (e.g., geolocation denied)
+  const [diagnostic, setDiagnostic] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
+
+    // Capture config diagnostics early to surface helpful guidance
+    const status = getWeatherConfigStatus();
+    if (!status.ok) {
+      setDiagnostic(status);
+    }
 
     // Helper function: fall back to a default city and show info to user
     const fallbackToCity = async (reasonText) => {
@@ -23,7 +30,7 @@ export function WeatherWidget() {
         const w = await fetchWeatherByCity(); // uses default city internally
         if (!cancelled) setWeather(w);
       } catch (e) {
-        if (!cancelled) setError('Unable to fetch weather data. Please check your configuration.');
+        if (!cancelled) setError(`${e?.message || 'Unable to fetch weather data.'}`);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -36,12 +43,12 @@ export function WeatherWidget() {
         if (!cancelled) setWeather(w);
       } catch (e) {
         if (!cancelled) {
-          setError('Unable to fetch weather for your location. Falling back to a default city.');
+          setError(`${e?.message || 'Unable to fetch weather for your location.'} Falling back to a default city.`);
           try {
             const w = await fetchWeatherByCity();
             if (!cancelled) setWeather(w);
-          } catch {
-            // keep error as is
+          } catch (e2) {
+            if (!cancelled) setError(e2?.message || 'Unable to fetch weather data after fallback.');
           }
         }
       } finally {
@@ -74,6 +81,11 @@ export function WeatherWidget() {
       {loading && <div className="small">Fetching weather...</div>}
       {!loading && info && !error && (
         <div className="small" style={{ color: 'var(--subtle)', marginBottom: 8 }}>{info}</div>
+      )}
+      {!loading && diagnostic && (
+        <div className="small" style={{ color: 'var(--error)', marginBottom: 8 }}>
+          Configuration issue: {diagnostic.issues.join(' | ')}{diagnostic.apiKeyMasked ? ` (key: ${diagnostic.apiKeyMasked})` : ''}
+        </div>
       )}
       {!loading && error && <div style={{ color: 'var(--error)' }} className="small">{error}</div>}
       {!loading && weather && !error && (
