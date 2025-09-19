@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 // PUBLIC_INTERFACE
 export function LandingPage() {
   /** Marketing style landing page introducing the app */
+  const sliderRef = useRef(null);
+
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    arrows: false
+  };
+
   return (
     <div>
       <section style={styles.hero}>
@@ -16,16 +32,34 @@ export function LandingPage() {
               providing suggestions to ensure your event is a success—rain or shine.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <Link to="/planner" className="btn">Open Planner</Link>
-              <a href="#features" className="btn btn-ghost">Learn More</a>
+              <Link to="/planner" className="btn" style={styles.mainCTA}>
+                Plan your next event
+              </Link>
             </div>
           </div>
-          <div className="card" style={styles.heroCard} aria-hidden>
-            <div style={styles.heroBadge}>Ocean Professional</div>
-            <div style={{ fontSize: 14, color: 'var(--subtle)' }}>Modern • Minimal • Responsive</div>
-            <div style={{ marginTop: 12, fontSize: 48 }}>🌤️</div>
-            <div style={{ marginTop: 6, fontWeight: 700, fontSize: 22, color: 'var(--primary)' }}>Live Weather</div>
-            <div className="small">Sticky widget with tips for your date</div>
+          <div className="card" style={styles.heroCard}>
+            <Slider ref={sliderRef} {...sliderSettings}>
+              <div style={styles.slide}>
+                <div style={styles.slideIcon}>📅</div>
+                <h3 style={styles.slideTitle}>Interactive Calendar</h3>
+                <p style={styles.slideDesc}>Pick dates with our intuitive calendar interface</p>
+              </div>
+              <div style={styles.slide}>
+                <div style={styles.slideIcon}>🌤️</div>
+                <h3 style={styles.slideTitle}>Weather Integration</h3>
+                <p style={styles.slideDesc}>Real-time weather data and smart planning tips</p>
+              </div>
+              <div style={styles.slide}>
+                <div style={styles.slideIcon}>📝</div>
+                <h3 style={styles.slideTitle}>Easy Booking</h3>
+                <p style={styles.slideDesc}>Streamlined form with weather-aware recommendations</p>
+              </div>
+              <div style={styles.slide}>
+                <div style={styles.slideIcon}>📊</div>
+                <h3 style={styles.slideTitle}>Smart Insights</h3>
+                <p style={styles.slideDesc}>Get personalized event planning suggestions</p>
+              </div>
+            </Slider>
           </div>
         </div>
       </section>
@@ -81,18 +115,40 @@ const styles = {
     color: 'var(--subtle)',
     maxWidth: 640
   },
-  heroCard: {
-    padding: 16,
-    textAlign: 'center'
+  mainCTA: {
+    fontSize: '1.125rem',
+    padding: '12px 24px',
+    background: 'linear-gradient(90deg, var(--primary), #60a5fa)',
+    transition: 'all 200ms ease',
+    boxShadow: 'var(--shadow-md)',
+    textTransform: 'none',
+    fontWeight: 600
   },
-  heroBadge: {
-    display: 'inline-block',
-    marginBottom: 6,
-    padding: '4px 10px',
-    borderRadius: 999,
-    background: 'linear-gradient(90deg, var(--secondary), #fbbf24)',
-    color: 'white',
-    fontSize: 12,
-    boxShadow: 'var(--shadow-sm)'
+  heroCard: {
+    padding: 24,
+    background: 'white',
+    borderRadius: 'var(--radius-lg)',
+    boxShadow: 'var(--shadow-md)',
+    overflow: 'hidden'
+  },
+  slide: {
+    textAlign: 'center',
+    padding: '12px 20px'
+  },
+  slideIcon: {
+    fontSize: 48,
+    marginBottom: 12
+  },
+  slideTitle: {
+    margin: '0 0 8px',
+    fontSize: 22,
+    fontWeight: 600,
+    color: 'var(--primary)'
+  },
+  slideDesc: {
+    margin: 0,
+    fontSize: 15,
+    color: 'var(--subtle)',
+    lineHeight: 1.5
   }
 };

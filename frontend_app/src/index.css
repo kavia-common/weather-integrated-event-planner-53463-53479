@@ -109,3 +109,18 @@ label {
   font-size: 0.85rem;
   color: var(--subtle);
 }
+
+/* Slick carousel customization */
+.slick-dots {
+  bottom: -30px;
+}
+
+.slick-dots li button:before {
+  color: var(--primary);
+  opacity: 0.25;
+}
+
+.slick-dots li.slick-active button:before {
+  color: var(--primary);
+  opacity: 0.75;
+}
