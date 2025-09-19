@@ -216,7 +216,7 @@ const styles = {
     display: 'inline-block',
     fontSize: 12,
     color: 'white',
-    background: 'linear-gradient(90deg, var(--primary), #60a5fa)',
+    background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
     padding: '4px 8px',
     borderRadius: 999,
     boxShadow: 'var(--shadow-sm)'

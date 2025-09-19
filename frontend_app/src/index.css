@@ -1,12 +1,13 @@
 :root {
-  --primary: #2563EB;
-  --secondary: #F59E0B;
+  --primary: #FF9A8B;
+  --secondary: #FF6A88;
+  --accent: #FFD280;
   --error: #EF4444;
-  --bg: #f9fafb;
+  --bg: #fff5f2;
   --surface: #ffffff;
   --text: #111827;
   --subtle: #6B7280;
-  --border: #E5E7EB;
+  --border: #FFE5E0;
 
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.1);

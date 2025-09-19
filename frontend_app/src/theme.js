@@ -1,14 +1,15 @@
 export const theme = {
-  name: "Ocean Professional",
+  name: "Warm Peach Sunset",
   colors: {
-    primary: "#2563EB", // blue
-    secondary: "#F59E0B", // amber
+    primary: "#FF9A8B", // warm peach
+    secondary: "#FF6A88", // rose
+    accent: "#FFD280", // soft yellow
     error: "#EF4444",
-    background: "#f9fafb",
+    background: "#fff5f2",
     surface: "#ffffff",
     text: "#111827",
     subtle: "#6B7280",
-    border: "#E5E7EB"
+    border: "#FFE5E0"
   },
   shadows: {
     sm: "0 1px 2px rgba(0,0,0,0.06)",
