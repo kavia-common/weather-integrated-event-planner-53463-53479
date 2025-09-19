@@ -95,7 +95,107 @@ export async function fetchWeatherByCity(cityName = DEFAULT_CITY) {
   return normalizeOpenWeather(data);
 }
 
-// Normalize OpenWeather response into a minimal shape for the widget
+// Build forecast endpoint URL from provided current-weather BASE_URL
+function forecastUrlFromBase(baseUrl) {
+  try {
+    const u = new URL(baseUrl);
+    // Replace trailing '/weather' with '/forecast' (5 day / 3 hour forecast)
+    u.pathname = u.pathname.replace(/\/weather$/, '/forecast');
+    return u.toString();
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * fetchForecastByCity fetches 5-day/3-hour forecast by city, then resolves the closest forecast item to targetDate.
+ * - cityName: string
+ * - targetDate: Date
+ * Returns a normalized object similar to current weather, plus meta about the match.
+ */
+export async function fetchForecastByCity(cityName = DEFAULT_CITY, targetDate) {
+  const status = getWeatherConfigStatus();
+  if (!status.ok) {
+    throw new Error(`Missing/invalid weather API configuration. Issues: ${status.issues.join('; ')}`);
+  }
+  const forecastUrl = forecastUrlFromBase(BASE_URL);
+  if (!forecastUrl) {
+    throw new Error('Forecast endpoint could not be derived from REACT_APP_WEATHER_API_BASE_URL. Ensure it ends with /weather.');
+  }
+  const url = `${forecastUrl}?q=${encodeURIComponent(cityName)}&appid=${encodeURIComponent(API_KEY)}&units=metric`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(
+      `Forecast API error: HTTP ${res.status}. URL: ${forecastUrl} (query hidden). Key: ${status.apiKeyMasked}. Body: ${txt}`.trim()
+    );
+  }
+  const data = await res.json();
+  const { best, city } = pickClosestForecastItem(data, targetDate);
+
+  if (!best) {
+    // No item found for this date range (e.g., far in the future)
+    return {
+      source: 'forecast',
+      location: {
+        name: city?.name || cityName || '',
+        country: city?.country || ''
+      },
+      current: null, // Indicates no forecast match
+      meta: {
+        matched: false,
+        message: 'No forecast available for the selected date. Try a date within the next 5 days.'
+      }
+    };
+  }
+
+  return normalizeOpenWeatherForecast(best, city);
+}
+
+// Choose the 3h forecast item closest to the selected date/time
+function pickClosestForecastItem(apiData, target) {
+  const list = apiData?.list || [];
+  const city = apiData?.city || {};
+  if (!Array.isArray(list) || list.length === 0) {
+    return { best: null, city };
+  }
+  const targetMs = target instanceof Date ? target.getTime() : new Date(target).getTime();
+  let best = null;
+  let bestDelta = Number.POSITIVE_INFINITY;
+  for (const item of list) {
+    const t = (item?.dt ?? 0) * 1000;
+    const delta = Math.abs(t - targetMs);
+    if (delta < bestDelta) {
+      bestDelta = delta;
+      best = item;
+    }
+  }
+  return { best, city };
+}
+
+// Normalize a forecast item into the widget shape
+function normalizeOpenWeatherForecast(item, city) {
+  const iconMain = item?.weather?.[0]?.main || 'Clear';
+  return {
+    source: 'forecast',
+    location: {
+      name: city?.name || '',
+      country: city?.country || ''
+    },
+    current: {
+      temp: Math.round(item?.main?.temp ?? 20),
+      description: item?.weather?.[0]?.description ?? 'clear sky',
+      icon: iconMain,
+      at: item?.dt ? new Date(item.dt * 1000).toISOString() : null
+    },
+    meta: {
+      matched: true
+    }
+  };
+}
+
+// Normalize OpenWeather response into a minimal shape for the widget (current weather)
 function normalizeOpenWeather(data) {
   const iconMain = data?.weather?.[0]?.main || 'Clear';
   return {

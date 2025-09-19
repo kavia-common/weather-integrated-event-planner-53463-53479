@@ -37,7 +37,7 @@ export function PlannerPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
         <BookingForm defaultDate={selectedDate} />
-        <Sidebar />
+        <Sidebar selectedDate={selectedDate} />
       </div>
     </div>
   );
