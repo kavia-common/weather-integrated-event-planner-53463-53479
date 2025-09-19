@@ -1,44 +1,65 @@
 const BASE_URL = process.env.REACT_APP_WEATHER_API_BASE_URL || '';
 const API_KEY = process.env.REACT_APP_WEATHER_API_KEY || '';
+const DEFAULT_CITY = 'New York'; // Used when geolocation is unavailable or denied
 
 /**
  * PUBLIC_INTERFACE
- * fetchWeatherByCoords fetches current weather by geographic coordinates.
+ * fetchWeatherByCoords fetches current weather by geographic coordinates using OpenWeatherMap.
  * Env required:
- * - REACT_APP_WEATHER_API_BASE_URL (string): weather API base URL
+ * - REACT_APP_WEATHER_API_BASE_URL (string): weather API base URL (e.g., https://api.openweathermap.org/data/2.5/weather)
  * - REACT_APP_WEATHER_API_KEY (string): API key
- * This function gracefully handles missing env by returning a mocked shape.
+ * Throws on missing env or failed response.
  */
 export async function fetchWeatherByCoords(lat, lon) {
   if (!BASE_URL || !API_KEY) {
-    // Safe fallback to allow UI rendering without real API
-    return {
-      source: 'mock',
-      current: {
-        temp: 22,
-        description: 'Clear',
-        icon: '☀️'
-      },
-      meta: {
-        note: 'Set REACT_APP_WEATHER_API_BASE_URL and REACT_APP_WEATHER_API_KEY in .env to enable live data.'
-      }
-    };
+    throw new Error('Missing weather API configuration. Please set REACT_APP_WEATHER_API_BASE_URL and REACT_APP_WEATHER_API_KEY in .env');
   }
 
-  // Example assumes an OpenWeather-like API; adapt endpoint/path via env.
   const url = `${BASE_URL}?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&appid=${encodeURIComponent(API_KEY)}&units=metric`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Weather API error: ${res.status}`);
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Weather API error: ${res.status} ${txt}`.trim());
+  }
   const data = await res.json();
 
-  // Normalize response into a minimal shape
-  const icon = (data.weather && data.weather[0]?.main) || 'Clear';
+  return normalizeOpenWeather(data);
+}
+
+/**
+ * PUBLIC_INTERFACE
+ * fetchWeatherByCity fetches current weather by city name using OpenWeatherMap.
+ * Useful as a fallback when geolocation is unavailable.
+ */
+export async function fetchWeatherByCity(cityName = DEFAULT_CITY) {
+  if (!BASE_URL || !API_KEY) {
+    throw new Error('Missing weather API configuration. Please set REACT_APP_WEATHER_API_BASE_URL and REACT_APP_WEATHER_API_KEY in .env');
+  }
+
+  const url = `${BASE_URL}?q=${encodeURIComponent(cityName)}&appid=${encodeURIComponent(API_KEY)}&units=metric`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Weather API error: ${res.status} ${txt}`.trim());
+  }
+  const data = await res.json();
+
+  return normalizeOpenWeather(data);
+}
+
+// Normalize OpenWeather response into a minimal shape for the widget
+function normalizeOpenWeather(data) {
+  const iconMain = data?.weather?.[0]?.main || 'Clear';
   return {
     source: 'live',
+    location: {
+      name: data?.name || '',
+      country: data?.sys?.country || ''
+    },
     current: {
-      temp: Math.round(data.main?.temp ?? 20),
-      description: data.weather?.[0]?.description ?? 'clear sky',
-      icon
+      temp: Math.round(data?.main?.temp ?? 20),
+      description: data?.weather?.[0]?.description ?? 'clear sky',
+      icon: iconMain
     }
   };
 }
