@@ -85,10 +85,13 @@ export function BookingForm({ defaultDate }) {
 
 const styles = {
   form: {
-    padding: 16,
-    minWidth: 300
+    padding: 12,
+    minWidth: 280,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8
   },
   field: {
-    marginBottom: 10
+    marginBottom: 6
   }
 };

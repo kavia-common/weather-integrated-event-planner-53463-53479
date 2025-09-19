@@ -9,33 +9,22 @@ export function PlannerPage() {
   const [selectedDate, setSelectedDate] = useState(null);
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', gap: 16, alignItems: 'start' }}>
-      <div>
-        <section className="card" style={{ padding: 16 }}>
-          <h2 style={{ marginTop: 0 }}>Plan your perfect event</h2>
-          <p className="small" style={{ marginTop: 0 }}>
-            Choose a date on the calendar. Check live weather and get actionable recommendations.
-          </p>
-          <Calendar value={selectedDate} onChange={setSelectedDate} />
-        </section>
-        <section className="card" style={{ padding: 16, marginTop: 16 }}>
-          <h3 style={{ marginTop: 0 }}>Recommendations</h3>
-          <p className="small" style={{ marginTop: 0 }}>
-            Recommendations will adapt to current weather shown in the sidebar. Select your date and proceed to booking.
-          </p>
-          <ul style={{ marginTop: 8, paddingLeft: 18 }}>
-            {selectedDate ? (
-              <li className="small">Selected date: {selectedDate.toDateString()}</li>
-            ) : (
-              <li className="small">Pick a date to get started.</li>
-            )}
-            <li className="small">Consider travel time and venue availability.</li>
-            <li className="small">Check vendor lead times for catering and AV.</li>
-          </ul>
-        </section>
-      </div>
+    <div className="grid" style={{ 
+      gridTemplateColumns: 'minmax(350px, 1fr) minmax(300px, 1fr)', 
+      gap: 12, 
+      alignItems: 'start',
+      maxWidth: '1400px',
+      margin: '0 auto'
+    }}>
+      <section className="card" style={{ padding: 12 }}>
+        <h2 style={{ fontSize: '1.5rem', marginTop: 0, marginBottom: 8 }}>Plan your perfect event</h2>
+        <p className="small" style={{ marginTop: 0, marginBottom: 12 }}>
+          Choose a date on the calendar. Check live weather and get actionable recommendations.
+        </p>
+        <Calendar value={selectedDate} onChange={setSelectedDate} />
+      </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
         <BookingForm defaultDate={selectedDate} />
         <Sidebar selectedDate={selectedDate} />
       </div>

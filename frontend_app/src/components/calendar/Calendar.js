@@ -46,8 +46,8 @@ export function Calendar({ value, onChange }) {
   const selectedKey = value ? value.toDateString() : null;
 
   return (
-    <div className="card" style={{ padding: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+    <div className="card" style={{ padding: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <button className="btn-ghost" style={styles.navBtn} onClick={prev} aria-label="Previous month">←</button>
         <strong>{monthName}</strong>
         <button className="btn-ghost" style={styles.navBtn} onClick={next} aria-label="Next month">→</button>
