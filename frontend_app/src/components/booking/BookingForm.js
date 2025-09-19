@@ -10,10 +10,13 @@ export function BookingForm({ defaultDate }) {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     title: '',
+    venue: '',
     date: defaultDate ? defaultDate.toISOString().slice(0,10) : '',
     time: '',
     guests: 10,
+    guestNames: '',
     notes: ''
   });
   const [message, setMessage] = useState('');
@@ -22,8 +25,14 @@ export function BookingForm({ defaultDate }) {
 
   const submit = (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.title || !form.date) {
-      setMessage('Please fill the required fields.');
+    if (!form.title || !form.date || !form.venue) {
+      setMessage('Please fill the required fields (Event Title, Date, and Venue).');
+      return;
+    }
+
+    // At least one contact method (email or phone) should be provided
+    if (!form.email && !form.phone) {
+      setMessage('Please provide either an email or phone number for contact.');
       return;
     }
 
@@ -58,18 +67,13 @@ export function BookingForm({ defaultDate }) {
       <p className="small" style={{ marginTop: 0 }}>Plan with WeatherWise tips. Fields with * are required.</p>
 
       <div style={styles.field}>
-        <label htmlFor="name">Name *</label>
-        <input id="name" name="name" value={form.name} onChange={update} placeholder="Jane Doe" />
-      </div>
-
-      <div style={styles.field}>
-        <label htmlFor="email">Email *</label>
-        <input id="email" name="email" type="email" value={form.email} onChange={update} placeholder="jane@example.com" />
-      </div>
-
-      <div style={styles.field}>
         <label htmlFor="title">Event Title *</label>
         <input id="title" name="title" value={form.title} onChange={update} placeholder="Company Retreat" />
+      </div>
+
+      <div style={styles.field}>
+        <label htmlFor="venue">Venue *</label>
+        <input id="venue" name="venue" value={form.venue} onChange={update} placeholder="Event venue or location" />
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -84,13 +88,62 @@ export function BookingForm({ defaultDate }) {
       </div>
 
       <div style={styles.field}>
-        <label htmlFor="guests">Guests</label>
+        <label htmlFor="name">Contact Name</label>
+        <input id="name" name="name" value={form.name} onChange={update} placeholder="Jane Doe" />
+      </div>
+
+      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={styles.field}>
+          <label htmlFor="email">Email (or Phone required)</label>
+          <input 
+            id="email" 
+            name="email" 
+            type="email" 
+            value={form.email} 
+            onChange={update} 
+            placeholder="jane@example.com"
+          />
+        </div>
+        <div style={styles.field}>
+          <label htmlFor="phone">Phone (or Email required)</label>
+          <input 
+            id="phone" 
+            name="phone" 
+            type="tel" 
+            value={form.phone} 
+            onChange={update} 
+            placeholder="(123) 456-7890"
+          />
+        </div>
+      </div>
+
+      <div style={styles.field}>
+        <label htmlFor="guests">Number of Guests</label>
         <input id="guests" name="guests" type="number" min="1" value={form.guests} onChange={update} />
       </div>
 
       <div style={styles.field}>
-        <label htmlFor="notes">Notes</label>
-        <textarea id="notes" name="notes" rows="3" value={form.notes} onChange={update} placeholder="Preferences, special requests..." />
+        <label htmlFor="guestNames">Guest Names (Optional)</label>
+        <textarea 
+          id="guestNames" 
+          name="guestNames" 
+          rows="2" 
+          value={form.guestNames} 
+          onChange={update} 
+          placeholder="Enter guest names, separated by commas..."
+        />
+      </div>
+
+      <div style={styles.field}>
+        <label htmlFor="notes">Additional Notes</label>
+        <textarea 
+          id="notes" 
+          name="notes" 
+          rows="3" 
+          value={form.notes} 
+          onChange={update} 
+          placeholder="Preferences, special requests, dietary requirements..."
+        />
       </div>
 
       {message && (
@@ -104,7 +157,7 @@ export function BookingForm({ defaultDate }) {
             alignItems: 'center',
             background: message.includes('Please') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(58, 186, 180, 0.1)',
             color: message.includes('Please') ? 'var(--error)' : 'var(--primary)',
-            border: `1px solid ${message.includes('Please') ? 'var(--error)' : 'var(--primary)'}`,
+            border: `1px solid ${message.includes('Please') ? 'var(--error)' : 'var(--primary)'}`
           }}
         >
           <span>{message}</span>
@@ -128,7 +181,20 @@ export function BookingForm({ defaultDate }) {
 
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <button type="submit" className="btn">Book Event</button>
-        <button type="reset" className="btn btn-ghost" onClick={() => { setForm({ ...form, title: '', notes: '' }); setMessage(''); }}>
+        <button 
+          type="reset" 
+          className="btn btn-ghost" 
+          onClick={() => { 
+            setForm({ 
+              ...form, 
+              title: '', 
+              venue: '',
+              guestNames: '',
+              notes: '' 
+            }); 
+            setMessage(''); 
+          }}
+        >
           Reset
         </button>
       </div>
