@@ -90,7 +90,7 @@ export function LandingPage() {
 
 const styles = {
   hero: {
-    background: 'linear-gradient(180deg, rgba(37,99,235,0.12), transparent)',
+    background: 'linear-gradient(165deg, rgba(37,99,235,0.25), rgba(245,158,11,0.08))',
     position: 'relative',
     paddingBottom: 40,
     minHeight: '100vh',
@@ -164,11 +164,12 @@ const styles = {
   },
   heroCard: {
     padding: 32,
-    background: 'white',
+    background: 'linear-gradient(135deg, rgba(37,99,235,0.03), rgba(255,255,255,0.9))',
     borderRadius: 'var(--radius-lg)',
     boxShadow: 'var(--shadow-lg)',
     overflow: 'hidden',
-    border: '1px solid rgba(37,99,235,0.1)',
+    border: '1px solid rgba(37,99,235,0.15)',
+    backdropFilter: 'blur(8px)',
     width: '100%',
     maxWidth: 600,
     margin: '0 auto'
@@ -198,13 +199,15 @@ const styles = {
     lineHeight: 1.6
   },
   wave: {
-    color: 'var(--surface)',
+    color: 'rgba(255,255,255,0.8)',
     position: 'absolute',
     bottom: -1,
     left: 0,
     width: '100%',
     overflow: 'hidden',
     lineHeight: 0,
-    transform: 'rotate(180deg)'
+    transform: 'rotate(180deg)',
+    opacity: 0.9,
+    background: 'linear-gradient(to bottom, transparent, rgba(37,99,235,0.05))'
   }
 };
