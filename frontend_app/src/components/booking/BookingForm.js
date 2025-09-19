@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import emailjs from '@emailjs/browser';
 
 // PUBLIC_INTERFACE
 export function BookingForm({ defaultDate }) {
@@ -23,7 +24,7 @@ export function BookingForm({ defaultDate }) {
 
   const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!form.title || !form.date || !form.venue) {
       setMessage('Please fill the required fields (Event Title, Date, and Venue).');
@@ -49,8 +50,45 @@ export function BookingForm({ defaultDate }) {
     // Update localStorage with new booking
     localStorage.setItem('bookings', JSON.stringify([...existingBookings, newBooking]));
 
+    let emailStatus = '';
+    
+    // Send confirmation email if email is provided
+    if (form.email && process.env.REACT_APP_EMAILJS_SERVICE_ID && 
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID && 
+        process.env.REACT_APP_EMAILJS_PUBLIC_KEY) {
+      try {
+        // Initialize EmailJS with public key
+        emailjs.init(process.env.REACT_APP_EMAILJS_PUBLIC_KEY);
+        
+        // Prepare template parameters
+        const templateParams = {
+          to_email: form.email,
+          event_title: form.title,
+          event_date: new Date(form.date).toLocaleDateString(),
+          event_time: form.time || 'Not specified',
+          venue: form.venue,
+          contact_name: form.name || 'Not provided',
+          guests_count: form.guests,
+          guest_names: form.guestNames || 'Not provided',
+          notes: form.notes || 'None',
+          booking_id: newBooking.id
+        };
+
+        // Send the email
+        await emailjs.send(
+          process.env.REACT_APP_EMAILJS_SERVICE_ID,
+          process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+          templateParams
+        );
+        emailStatus = ' A confirmation email has been sent to your email address.';
+      } catch (error) {
+        console.error('Failed to send email:', error);
+        emailStatus = ' (Email confirmation could not be sent)';
+      }
+    }
+
     // Show success message
-    setMessage('Your event has been booked!');
+    setMessage(`Your event has been booked!${emailStatus}`);
   };
 
   // Auto-dismiss success message after 5 seconds
